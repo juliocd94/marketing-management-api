@@ -1,0 +1,32 @@
+### Register
+POST http://marketing-management-api.test/api/register
+Content-Type: application/json
+
+{
+    "name": "Julio Duque",
+    "companyName": "Insec, C.A.",
+    "email": "juliocd94@gmail.com",
+    "password": "12345678"
+}
+
+### Login
+POST http://marketing-management-api.test/api/login
+Content-Type: application/json
+
+{
+    "email": "juliocd94@gmail.com",
+    "password": "12345678"
+}
+
+### Profile
+GET http://marketing-management-api.test/api/user-profile
+Authorization: Bearer 3|JBS7aV7mJbSkkUbE2Nv5RxQ7vRwHslUjoNZmMdf51bf0b8f7
+
+
+### Logout
+GET http://marketing-management-api.test/api/logout
+Authorization: Bearer 3|JBS7aV7mJbSkkUbE2Nv5RxQ7vRwHslUjoNZmMdf51bf0b8f7
+
+### Get tickets
+GET http://marketing-management-api.test/api/tickets
+Authorization: Bearer 11|YxWeQ5hg6B9nSw9riWkodLtD2tpfJz1g7MIalg9q80805de8
