@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RifaController;
@@ -35,5 +36,9 @@ Route::group( ['middleware' => ['auth:sanctum']], function() {
     Route::delete('rifas/{rifa}', [RifaController::class, 'destroy']);
 
     Route::post('payments', [PaymentController::class, 'store']);
+
+    Route::post('companies', [CompanyController::class, 'store']);
+
+    Route::post('customers', [CustomerController::class, 'store']);
 
 });

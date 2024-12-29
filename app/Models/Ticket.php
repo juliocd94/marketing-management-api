@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static create(array $array)
+ * @method static findOrFail(mixed $ticketId)
+ * @method static find(mixed $ticketId)
+ * @method static where(string $string, $null)
+ * @method static insert(array $tickets)
  */
 class Ticket extends Model
 {

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Company\CreateCompany;
+use App\Http\Requests\StoreCompanyRequest;
 use App\Models\Company;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
@@ -26,9 +29,17 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCompanyRequest $request, CreateCompany $createCompany): JsonResponse
     {
-        //
+        $validated = $request->validated();
+
+        $company = $createCompany->execute($validated);
+
+        return response()->json([
+            "status" => true,
+            "message" => "¡Compañía creada exitosamente!",
+            "data" => $company
+        ]);
     }
 
     /**

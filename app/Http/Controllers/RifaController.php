@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Rifa\CreateRifaAction;
+use App\Http\Requests\StoreRifaRequest;
+use App\Http\Requests\UpdateRifaRequest;
 use App\Models\Award;
 use App\Models\Rifa;
-use App\Models\Ticket;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,50 +40,15 @@ class RifaController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @throws Exception
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreRifaRequest $request, CreateRifaAction $createRifa): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'description' => 'string',
-            'quantityTickets' => 'required|int',
-            'currency' => 'required|string',
-            'price' => 'required|numeric',
-            'awards' => 'required|array',
-            'initDate' => 'date',
-            'finishDate' => 'date'
-        ]);
+        $validated = $request->validated();
 
         $user = $request->user();
 
-        $rifa = new Rifa();
-        $rifa->company_id = $user->company->id;
-        $rifa->name = $validated['name'];
-        $rifa->description = $validated['description'];
-        $rifa->init_date = $validated['initDate'];
-        $rifa->finish_date = $validated['finishDate'];
-        $rifa->currency = $validated['currency'];
-        $rifa->quantity_tickets = $validated['quantityTickets'];
-        $rifa->ticket_price = $validated['price'];
-        $rifa->save();
-
-        foreach ($validated['awards'] as $item){
-            $award = new Award();
-            $award->rifa_id = $rifa->id;
-            $award->description = $item['description'];
-            $award->lottery = $item['lottery'];
-            $award->draw_date = $item['drawDate'];
-            $award->status = "Programado";
-            $award->save();
-        }
-
-        for ($i = 0; $i < $rifa->quantity_tickets; $i++) {
-            Ticket::create([
-                'rifa_id' => $rifa->id,
-                'customer_id' => null,
-                'number' => str_pad($i, 3, '0', STR_PAD_LEFT)
-            ]);
-        }
+        $rifa = $createRifa->execute($validated, $user);
 
         return response()->json([
             "status" => true,
@@ -113,22 +80,9 @@ class RifaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Rifa $rifa): JsonResponse
+    public function update(UpdateRifaRequest $request, Rifa $rifa): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'quantityTickets' => 'required|int',
-            'currency' => 'required|string',
-            'price' => 'required|numeric',
-            'awards' => 'required|array',
-            'awards.*.id' => 'nullable|int|exists:awards,id',
-            'awards.*.description' => 'required|string',
-            'awards.*.lottery' => 'required|string',
-            'awards.*.drawDate' => 'required|date',
-            'initDate' => 'nullable|date',
-            'finishDate' => 'nullable|date'
-        ]);
+        $validated = $request->validated();
 
         $rifa->name = $validated['name'];
         $rifa->description = $validated['description'];
@@ -149,7 +103,6 @@ class RifaController extends Controller
                 $award->description = $item['description'];
                 $award->lottery = $item['lottery'];
                 $award->draw_date = $item['drawDate'];
-                $award->save();
             } else {
                 $award = new Award();
                 $award->rifa_id = $rifa->id;
@@ -157,8 +110,8 @@ class RifaController extends Controller
                 $award->lottery = $item['lottery'];
                 $award->draw_date = $item['drawDate'];
                 $award->status = "Programado";
-                $award->save();
             }
+            $award->save();
         }
 
         return response()->json([
@@ -167,7 +120,6 @@ class RifaController extends Controller
             "data" => $rifa->load('awards')
         ]);
     }
-
 
     /**
      * Remove the specified resource from storage.

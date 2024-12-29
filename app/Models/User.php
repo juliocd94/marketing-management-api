@@ -15,6 +15,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $password
  * @method static where(string $string, string $string1, mixed $email)
  * @method static insert(array[] $companies)
+ * @method static create(array $array)
  */
 class User extends Authenticatable
 {
@@ -27,6 +28,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'company_id',
         'name',
         'email',
         'password',

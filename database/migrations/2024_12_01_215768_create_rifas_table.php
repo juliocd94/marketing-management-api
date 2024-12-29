@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->nullable()->constrained()->onDelete('set null');
             $table->string('name');
-            $table->bigInteger('quantity_tickets');
             $table->string('description')->nullable();
             $table->string('currency');
             $table->float('ticket_price');
+            $table->bigInteger('quantity_tickets');
             $table->date('init_date')->nullable();
             $table->date('finish_date')->nullable();
             $table->timestamps();

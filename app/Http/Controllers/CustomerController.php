@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Customer\CreateCustomerAction;
+use App\Http\Requests\StoreCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,25 +35,13 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreCustomerRequest $request, CreateCustomerAction $createCustomer): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'phone' => 'required|string',
-            'address' => 'required|string',
-            'identification' => 'required|string'
-        ]);
+        $validated = $request->validated();
 
         $user = $request->user();
 
-        $customer = new Customer();
-        $customer->company_id = $user->company->id;
-        $customer->identification_type = "Cédula";
-        $customer->identification = $validated['identification'];
-        $customer->phone = $validated['phone'];
-        $customer->address = $validated['address'];
-        $customer->name = $validated['name'];
-        $customer->save();
+        $customer = $createCustomer->execute($validated, $user);
 
         return response()->json([
             "status" => true,

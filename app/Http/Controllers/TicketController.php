@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Ticket\RegisterTicketSaleAction;
+use App\Http\Requests\RegisterTicketSaleRequest;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Ticket;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -219,48 +222,20 @@ class TicketController extends Controller
     }
 
 
-    public function registreSell(Request $request)
-//    public function registreSell(Request $request): JsonResponse|\Exception
+    /**
+     * @throws Exception
+     */
+    public function registreSell(RegisterTicketSaleRequest $request, RegisterTicketSaleAction $action): JsonResponse
     {
-        $validated = $request->validate([
-            'id' => 'nullable|int',
-            'name' => 'required|string',
-            'phone' => 'required|string',
-            'address' => 'required|string',
-            'identification' => 'required|string|unique:customers,identification',
-            'ticketId' => 'required|int',
-        ]);
-
-        $ticket = Ticket::find($validated['ticketId']);
-
-        if (!is_null($ticket->customer_id)){
-            return new \Exception('El ticket ya fue comprado por otro usuario');
-        }
+        $validated = $request->validated();
 
         $user = $request->user();
-        $user = $user->load('company');
 
-        if ($validated['id']){
-            $customer = Customer::find($validated['id']);
-            $customer->phone = $validated['phone'];
-            $customer->save();
-        }else{
-            $customer = new Customer();
-            $customer->company_id = $user->company->id;
-            $customer->identification_type = "Cédula";
-            $customer->identification = $validated['identification'];
-            $customer->phone = $validated['phone'];
-            $customer->address = $validated['address'];
-            $customer->name = $validated['name'];
-            $customer->save();
-        }
-
-        $ticket->customer_id = $customer->id;
-        $ticket->save();
+        $ticket = $action->execute($validated, $user);
 
         return response()->json([
             "status" => true,
-            "message" => "Ticket apartado exitosamente",
+            "message" => "¡Venta completada exitosamente!",
             "data" => $ticket->load('customer')
         ]);
     }

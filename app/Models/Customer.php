@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static insert(array $customers)
+ * @method static findOrFail(mixed $customerId)
+ * @method static find(mixed $customerId)
+ * @method create(array $array)
  */
 class Customer extends Model
 {

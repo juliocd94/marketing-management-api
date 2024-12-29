@@ -17,19 +17,22 @@ class PlanSeeder extends Seeder
                 'id' => 1,
                 'name' => 'Free',
                 'description' => 'Plan gratis',
-                'cost' => 0
+                'cost' => 0,
+                'code' => 'drt54h'
             ],
             [
                 'id' => 2,
-                'name' => 'Intermedio',
+                'name' => 'Gestión',
                 'description' => 'Plan intermedio',
-                'cost' => 400.00
+                'cost' => 400.00,
+                'code' => 'dlt39i'
             ],
             [
                 'id' => 3,
                 'name' => 'Plus',
                 'description' => 'Plan plus',
-                'cost' => 700.00
+                'cost' => 700.00,
+                'code' => 'pkt13f'
             ]
         ];
 

@@ -2,48 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
+use App\Actions\User\RegisterUser;
+use App\Events\UserRegistered;
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function register(Request $request): JsonResponse
+    public function register(RegisterUserRequest $request, RegisterUser $registerUser): JsonResponse
     {
-        $validated = $request->validate([
-            'companyName' => 'required|string',
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required'
-        ]);
+        $validated = $request->validated();
 
-        do {
-            $uniqueCode = Str::random(6);
-        } while (Company::where('code', $uniqueCode)->exists());
-
-        $company = new Company();
-        $company->plan_id = 1;
-        $company->name = $validated['companyName'];
-        $company->code = $uniqueCode;
-        $company->save();
-
-        $user = new User();
-        $user->company_id = $company->id;
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-        $user->password = Hash::make($validated['password']);
-        $user->save();
+        $user = $registerUser->execute($validated);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        event(new UserRegistered($user));
+
         return response()->json([
             "status" => true,
-            "message" => "Usuario creado exitosamente",
             'access_token' => $token,
-            "data" => $user->load('company')
+            "data" => $user->load('company'),
         ]);
     }
     public function login(Request $request): JsonResponse

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rifa_id')->constrained()->onDelete('cascade');
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
-            $table->float('amount');
+            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->date('date');
+            $table->float('amount');
             $table->string('currency');
             $table->string('payment_method');
             $table->float('reference_value');
