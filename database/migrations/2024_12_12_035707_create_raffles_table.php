@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('raffles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lottery_variant_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('lottery')->nullable();
             $table->string('draw_date');
             $table->string('winning_number');
             $table->timestamps();
