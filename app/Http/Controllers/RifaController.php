@@ -62,10 +62,27 @@ class RifaController extends Controller
      */
     public function show(Rifa $rifa): JsonResponse
     {
+        $rifa->load('awards', 'tickets', 'payments.ticket');
+
+        $totalTickets = $rifa->tickets->count();
+        $soldTickets = $rifa->tickets->whereNotNull('customer_id')->count();
+        $soldWithoutPayment = $rifa->tickets->whereNotNull('customer_id')
+            ->where('total_paid', 0)
+            ->count();
+        $unsoldTickets = $rifa->tickets->whereNull('customer_id')->count();
+
         return response()->json([
             "status" => true,
             "message" => "Proyecto obtenido exitosamente",
-            "data" => $rifa->load('awards')
+            "data" => [
+                "rifa" => $rifa,
+                "statistics" => [
+                    "total_tickets" => $totalTickets,
+                    "sold_tickets" => $soldTickets,
+                    "sold_without_payment" => $soldWithoutPayment,
+                    "unsold_tickets" => $unsoldTickets,
+                ]
+            ]
         ]);
     }
 

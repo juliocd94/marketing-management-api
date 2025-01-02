@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static create(array $array)
+ * @method static where(string $string, $rifaId)
  */
 class Rifa extends Model
 {
@@ -18,12 +19,23 @@ class Rifa extends Model
         'ticket_price',
         'quantity_tickets',
         'init_date',
-        'finish_date'
+        'finish_date',
+        'payments'
     ];
 
     public function awards(): HasMany
     {
         return $this->hasMany(Award::class);
+    }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 
     protected $appends = ['status'];

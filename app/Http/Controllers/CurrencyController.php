@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Lottery;
+use App\Enums\Currency;
 use Illuminate\Http\JsonResponse;
 
-class LotteryController extends Controller
+class CurrencyController extends Controller
 {
     /**
-     * Get the list of lotteries.
+     * Get the list of currencies.
      */
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => Lottery::all(),
+            'data' => Currency::all(),
         ]);
     }
 }

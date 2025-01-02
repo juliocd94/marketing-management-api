@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\LotteryController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\RifaController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
@@ -19,7 +22,7 @@ Route::group( ['middleware' => ['auth:sanctum']], function() {
 
 //    Route::get('tickets/{rifaId}', [TicketController::class, 'index']);
     Route::get('tickets', [TicketController::class, 'index']);
-    Route::get('tickets-active-project', [TicketController::class, 'getTicketsActiveProject']);
+    Route::post('tickets-rifa/{rifaId}', [TicketController::class, 'getTicketsRifa']);
     Route::get('tickets/{ticket}', [TicketController::class, 'show']);
     Route::get('tickets-sold', [TicketController::class, 'sold']);
     Route::get('tickets-unsold', [TicketController::class, 'unsold']);
@@ -36,9 +39,15 @@ Route::group( ['middleware' => ['auth:sanctum']], function() {
     Route::delete('rifas/{rifa}', [RifaController::class, 'destroy']);
 
     Route::post('payments', [PaymentController::class, 'store']);
+    Route::get('payments-rifa/{rifaId}', [PaymentController::class, 'paymentsRifa']);
 
     Route::post('companies', [CompanyController::class, 'store']);
 
     Route::post('customers', [CustomerController::class, 'store']);
 
+    Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+
+    Route::get('/currencies', [CurrencyController::class, 'index']);
+
+    Route::get('/lotteries', [LotteryController::class, 'index']);
 });

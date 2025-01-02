@@ -6,6 +6,7 @@ use App\Actions\Ticket\RegisterTicketSaleAction;
 use App\Http\Requests\RegisterTicketSaleRequest;
 use App\Models\Customer;
 use App\Models\Payment;
+use App\Models\Rifa;
 use App\Models\Ticket;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -41,14 +42,12 @@ class TicketController extends Controller
         ]);
     }
 
-    public function getTicketsActiveProject(Request $request): JsonResponse
+    public function getTicketsRifa(Request $request, $rifaId): JsonResponse
     {
+        $filter = $request->input('filter');
         $company = $request->user()->company;
 
-        $rifa = $company->rifas()
-            ->whereDate('init_date', '<=', now())
-            ->whereDate('finish_date', '>=', now())
-            ->first();
+        $rifa = Rifa::where('id', $rifaId)->where('company_id', $company->id)->first();
 
         if (!$rifa) {
             return response()->json([
@@ -57,13 +56,20 @@ class TicketController extends Controller
             ], 404);
         }
 
-        $tickets = Ticket::with('customer')->where('rifa_id', $rifa->id)->get();
+        $query = Ticket::with('customer')->where('rifa_id', $rifa->id);
 
+        if ($filter == 2) {
+            $query->whereNotNull('customer_id');
+        } elseif ($filter == 3) {
+            $query->whereNull('customer_id');
+        }
 
-        if (!$tickets) {
+        $tickets = $query->get();
+
+        if ($tickets->isEmpty()) {
             return response()->json([
                 "status" => false,
-                "message" => "No se encontraron un tickets."
+                "message" => "No se encontraron tickets."
             ], 404);
         }
 
